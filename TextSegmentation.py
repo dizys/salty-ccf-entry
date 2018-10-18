@@ -42,6 +42,7 @@ def tfidf_vectorize(corpus):
     vectorizer = TfidfVectorizer()
     tfidf = vectorizer.fit_transform(corpus)
     print(tfidf)
+    return tfidf
 
 
 def main():
