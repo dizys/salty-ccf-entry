@@ -2,7 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="eac1d8b8-d359-4b8a-b127-7fb60fa80247" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/data/word2vec_model/zh.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/naive.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/naivelr.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/make_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/text_segmentation.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/test_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/langconv.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/util.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/zh_wiki.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TextSegmentation.py" beforeDir="false" afterPath="$PROJECT_DIR$/TextSegmentation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/stop_words.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/stop_words.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/train.csv" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -16,15 +32,34 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="TextSegmentation.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="TextSegmentation.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TextSegmentation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="318">
-              <caret line="50" lean-forward="true" selection-start-line="50" selection-end-line="50" />
+            <state relative-caret-position="369">
+              <caret line="40" column="28" lean-forward="true" selection-start-line="12" selection-start-column="4" selection-end-line="40" selection-end-column="28" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
             </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="text_segmentation.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/text_segmentation.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="573">
+              <caret line="93" column="28" lean-forward="true" selection-start-line="93" selection-start-column="28" selection-end-line="93" selection-end-column="28" />
+              <folding>
+                <element signature="e#0#10#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="stop_words.txt" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/data/stop_words.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-357" />
           </provider>
         </entry>
       </file>
@@ -37,6 +72,7 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/TextSegmentation.py" />
+        <option value="$PROJECT_DIR$/src/main/text_segmentation.py" />
       </list>
     </option>
   </component>
@@ -46,7 +82,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="395" />
     <option name="y" value="20" />
     <option name="width" value="1330" />
@@ -64,6 +100,28 @@
             <path>
               <item name="salty-ccf-entry" type="b2602c69:ProjectViewProjectNode" />
               <item name="salty-ccf-entry" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="salty-ccf-entry" type="b2602c69:ProjectViewProjectNode" />
+              <item name="salty-ccf-entry" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="salty-ccf-entry" type="b2602c69:ProjectViewProjectNode" />
+              <item name="salty-ccf-entry" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
+              <item name="word2vec_model" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="salty-ccf-entry" type="b2602c69:ProjectViewProjectNode" />
+              <item name="salty-ccf-entry" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="salty-ccf-entry" type="b2602c69:ProjectViewProjectNode" />
+              <item name="salty-ccf-entry" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -138,9 +196,9 @@
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32952926" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32952926" />
       <window_info anchor="bottom" id="Terminal" order="7" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25670242" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25670242" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" id="SciView" order="3" />
@@ -190,12 +248,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/TextSegmentation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="318">
-          <caret line="50" lean-forward="true" selection-start-line="50" selection-end-line="50" />
+        <state relative-caret-position="369">
+          <caret line="40" column="28" lean-forward="true" selection-start-line="12" selection-start-column="4" selection-end-line="40" selection-end-column="28" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/text_segmentation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="573">
+          <caret line="93" column="28" lean-forward="true" selection-start-line="93" selection-start-column="28" selection-end-line="93" selection-end-column="28" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/stop_words.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-357" />
       </provider>
     </entry>
   </component>

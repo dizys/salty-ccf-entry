@@ -5,5 +5,5 @@
   "files.eol": "\n",
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
-  "python.pythonPath": "D:\\Dev\\Tools\\Anaconda\\Anaconda3\\python.exe"
+  "python.pythonPath": "D:\\Anaconda3\\envs\\tf14_py35\\python.exe"
 }
