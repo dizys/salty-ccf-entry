@@ -15,9 +15,14 @@ def segmentation():
         csv_file = csv.reader(f, dialect='excel')
         stopwords = stopwordslist()
         pre_row = ''
+        tmp_line = 1
         text_segmentation = []
+        subject = []
+        sentiment_value = []
         for (line, row) in enumerate(csv_file):
             text_segmentation.append([])
+            subject.append([])
+            sentiment_value.append([])
             # 除重
             if row[1] != pre_row:
                 # 分词
@@ -25,11 +30,19 @@ def segmentation():
                 for word in seg_list:
                     if word not in stopwords:
                         text_segmentation[line].append(word)
-            if text_segmentation[line].__len__() == 0:
-                pass
-                # print(row[1] + ' empty segment')
-                # print(seg_list)
+                # 记录去重后初次出现的行数
+                tmp_line = line
+                subject[line].append(row[2])
+                sentiment_value[line].append(row[3])
+            else:
+                # 如果与上一条评论相同，则将主题和评分放入初次出现行中的list
+                subject[tmp_line].append(row[2])
+                sentiment_value[tmp_line].append(row[3])
+            # print(row[1] + ' empty segment')
+            # print(seg_list)
             pre_row = row[1]
+        print(subject)
+        print(sentiment_value)
         print(text_segmentation)
 
 
