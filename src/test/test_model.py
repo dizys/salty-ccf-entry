@@ -1,27 +1,43 @@
 # !/usr/bin/python
 # -*-coding:utf-8-*-
 
-import os
 import numpy as np
 import gensim
 from src.utils.util import Traditional2Simplified
 
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
+from keras.utils import to_categorical
+
+from keras.models import Model
+from keras.layers import Input, Dense, Dropout, Activation, Embedding
+from keras.layers import Conv1D, MaxPooling1D, Flatten
+from keras.optimizers import SGD
+
+
+# file directory and name
 WORD2VEC_DIR = 'data/word2vec_model/'
 WORD2VEC_NAME = 'zh.bin'
 TEXT_DATA_DIR = 'data/text/'
 
 
+# IMPORTANT hyper_parameters
+MAX_NB_WORDS = 99999
+MAX_SEQUENCE_LENGTH = 99999
+VALIDATION_SPLIT = 0.2
+
+
 """
 1. get texts
 """
+# waiting for cleaned data.
+texts = []
+labels = []
 
 
 """
-2. preprocessing and get train, test data
+2. preprocessing and get train, test, validate data
 """
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
-
 tokenizer = Tokenizer(nb_words=MAX_NB_WORDS)
 tokenizer.fit_on_texts(texts)
 sequences = tokenizer.texts_to_sequences(texts)
@@ -70,7 +86,6 @@ for i in range(len(vocab_list)):
 """
 4. make embedding layer
 """
-from keras.layers import Embedding
 EMBEDDING_DIM = 100 #词向量维度
 embedding_layer = Embedding(len(embeddings_matrix),
                             EMBEDDING_DIM,
@@ -92,11 +107,14 @@ x = Conv1D(128, 5, activation='relu')(x)
 x = MaxPooling1D(35)(x)  # global max pooling
 x = Flatten()(x)
 x = Dense(128, activation='relu')(x)
-preds = Dense(len(labels_index), activation='softmax')(x)
+
+# for multilabel problem
+preds = Dense(len(labels_index), activation='sigmod')(x)
+sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 
 model = Model(sequence_input, preds)
-model.compile(loss='categorical_crossentropy',
-              optimizer='rmsprop',
+model.compile(loss='binary_crossentropy',
+              optimizer='adam',  # sgd
               metrics=['acc'])
 
 
@@ -104,10 +122,13 @@ model.compile(loss='categorical_crossentropy',
 6. learn
 """
 model.fit(x_train, y_train, validation_data=(x_val, y_val),
-          epochs=2, batch_size=128)
+          epochs=5, batch_size=128)
 
 
 """
 7. test
 """
-pass
+preds = model.predict(x_test)
+preds[preds>=0.5] = 1
+preds[preds<0.5] = 0
+# score = compare preds and y_test
