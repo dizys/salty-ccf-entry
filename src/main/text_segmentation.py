@@ -3,8 +3,8 @@ import jieba
 import jieba.analyse
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-STOP_WORD_LIST_PATH = 'stop_words.txt'
-TRAIN_DATA_PATH = 'train.csv'
+STOP_WORD_LIST_PATH = 'data/stop_words.txt'
+TRAIN_DATA_PATH = 'data/train.csv'
 
 
 def flatten(list):
