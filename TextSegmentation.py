@@ -49,6 +49,5 @@ def main():
     tfidf_vectorize(flatten(segments))
 
 
-ad
 if __name__ == '__main__':
     main()
