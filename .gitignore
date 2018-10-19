@@ -108,3 +108,10 @@ venv.bak/
 
 # vscode
 .vscode
+
+# word2vec pre_training model
+zh.*
+embedding_matrix
+
+# useless script
+sequence_word_vector.py
