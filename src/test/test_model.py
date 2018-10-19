@@ -31,7 +31,7 @@ MAX_SEQUENCE_LENGTH = 40
 VALIDATION_SPLIT = 0.9
 
 EMBEDDING_DIM = 300
-JUDGE_THREAHOLD = 0.5
+JUDGE_THRESHOLD = 0.5
 MAX_EPOCHES = 2
 BATCH_SIZE = 32
 
@@ -128,6 +128,6 @@ model.fit(x_train, y_train, validation_data=(x_val, y_val),
 7. test
 """
 preds = model.predict(x_test)
-preds[preds >= JUDGE_THREAHOLD] = 1
-preds[preds < JUDGE_THREAHOLD] = 0
+preds[preds >= JUDGE_THRESHOLD] = 1
+preds[preds < JUDGE_THRESHOLD] = 0
 # score = compare preds and y_test
