@@ -1,107 +1,87 @@
 import csv
 import jieba
 import jieba.analyse
+import _pickle as pickle
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
+
 
 STOP_WORD_LIST_PATH = '../../data/stop_words.txt'
 TRAIN_DATA_PATH = '../../data/train.csv'
 
 
-def flatten(list):
-    return [item for sublist in list for item in sublist]
-
-
 def stopwordslist():
     stopwords = [line.strip()
-                 for line in open(STOP_WORD_LIST_PATH).readlines()]
+                 for line in open(STOP_WORD_LIST_PATH, encoding='utf-8').readlines()]
     return stopwords
 
 
-def segment():
-    with open(TRAIN_DATA_PATH, mode='r', encoding='utf-8', newline='') as f:
-        # 读取csv文件
+def process(path):
+    with open(path, mode='r', encoding='utf-8', newline='') as f:
         csv_file = csv.reader(f, dialect='excel')
         stopwords = stopwordslist()
         pre_row = ''
-        text_segmentation = []
+        result = []
+
         for (line, row) in enumerate(csv_file):
-            # 除重
-            if row[1] != pre_row:
-                line_segmentation = []
-                # 分词
-                seg_list = jieba.cut(row[1], cut_all=False)
-                for word in seg_list:
-                    if word not in stopwords:
-                        line_segmentation.append(word)
-                text_segmentation.append(line_segmentation)
-            pre_row = row[1]
-        return text_segmentation
+            is_new_id = (pre_row != row[0])
+
+            if is_new_id:
+                result.append([[], [], []])
+            index = len(result) - 1
+
+            if is_new_id:
+                result[index][0] = segment(row[1], stopwords)
+            result[index][1].append(row[2])
+            result[index][2].append(row[3])
+            pre_row = row[0]
+
+        return result
 
 
-def sub():
-    with open(TRAIN_DATA_PATH, mode='r', encoding='utf-8', newline='') as f:
-        # 读取csv文件
-        csv_file = csv.reader(f, dialect='excel')
-        pre_row = ''
-        tmp_line = 1
-        subject = []
-        for (line, row) in enumerate(csv_file):
-            subject.append([])
-            # 除重
-            if row[1] != pre_row:
-                # 记录去重后初次出现的行数
-                tmp_line = line
-                subject[line].append(row[2])
-            else:
-                # 如果与上一条评论相同，则将主题和评分放入初次出现行中的list
-                subject[tmp_line].append(row[2])
-            pre_row = row[1]
+def segment(text, stopwords):
+    line_segments = []
+    seg_list = jieba.cut(text, cut_all=False)
 
-    for sub in subject:
-        if sub == []:
-            subject.remove(sub)
-    return subject
+    for word in seg_list:
+        if word not in stopwords:
+            line_segments.append(word)
+
+    return line_segments
 
 
-def value():
-    with open(TRAIN_DATA_PATH, mode='r', encoding='utf-8', newline='') as f:
-        # 读取csv文件
-        csv_file = csv.reader(f, dialect='excel')
-        pre_row = ''
-        tmp_line = 1
-        sentiment_value = []
-        for (line, row) in enumerate(csv_file):
-            sentiment_value.append([])
-            # 除重
-            if row[1] != pre_row:
-                # 记录去重后初次出现的行数
-                tmp_line = line
-                sentiment_value[line].append(row[3])
-            else:
-                # 如果与上一条评论相同，则将主题和评分放入初次出现行中的list
-                sentiment_value[tmp_line].append(row[3])
-            pre_row = row[1]
+def fetch_segments(data):
+    segments = []
 
-    for value in sentiment_value:
-        if value == []:
-            sentiment_value.remove(value)
-    return sentiment_value
+    for line in data:
+        segments.append(line[0])
+
+    return segments
 
 
-def tfidf_vectorize(corpus):
+def tfidf_vectorize(segments):
     vectorizer = TfidfVectorizer()
+    corpus = []
+
+    for (line, segment) in enumerate(segments):
+        corpus.append(' '.join(segment))
+
     tfidf = vectorizer.fit_transform(corpus)
-    print(tfidf)
+
     return tfidf
 
 
 def main():
-    segments = segment()
-    subject = sub()
-    setiment_value = value()
-    tfidf = tfidf_vectorize(flatten(segments))
+    data = process(TRAIN_DATA_PATH)
+    print(data)
+
+    segments = fetch_segments(data)
+    tfidf = tfidf_vectorize(segments)
+    print(tfidf)
+
+    pickle.dump(data, open('../../data/pickles/data', 'wb'))
+    pickle.dump(tfidf, open('../../data/pickles/tfidf_data', 'wb'))
 
 
 if __name__ == '__main__':
