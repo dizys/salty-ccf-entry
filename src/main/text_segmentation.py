@@ -2,6 +2,8 @@ import csv
 import jieba
 import jieba.analyse
 import _pickle as pickle
+import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
@@ -29,6 +31,7 @@ def process(path):
         stopwords = stopwordslist()
         pre_row = ''
         result = []
+        word_statistics = []
 
         for (line, row) in enumerate(csv_file):
             if row[0] == 'content_id':
@@ -42,11 +45,14 @@ def process(path):
 
             if is_new_id:
                 result[index][0] = segment(row[1], stopwords)
+                words_count = len(result[index][0])
+                word_statistics.append(words_count)
+
             result[index][1].append(subjectToId(row[2]))
             result[index][2].append(int(row[3]))
             pre_row = row[0]
 
-        return result
+        return result, word_statistics
 
 
 def segment(text, stopwords):
@@ -99,8 +105,17 @@ def process_test_data(path):
         return result
 
 
+def paint_hist(statistics):
+    df = pd.Series(statistics)
+    print(df)
+    ax = df.hist(bins=list(range(0, 80, 5)))
+    plt.xlabel('Word count')
+    plt.ylabel('Frequency')
+    plt.show()
+
+
 def main():
-    data = process(TRAIN_DATA_PATH)
+    data, word_statistics = process(TRAIN_DATA_PATH)
     print(data[0:100])
 
     segments = fetch_segments(data)
@@ -113,6 +128,8 @@ def main():
     pickle.dump(data, open('../../data/pickles/data', 'wb'))
     pickle.dump(tfidf, open('../../data/pickles/data_tfidf', 'wb'))
     pickle.dump(test_data, open('../../data/pickles/test_data', 'wb'))
+
+    paint_hist(word_statistics)
 
 
 if __name__ == '__main__':
