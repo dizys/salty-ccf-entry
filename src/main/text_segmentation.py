@@ -17,6 +17,11 @@ def stopwordslist():
     return stopwords
 
 
+def subjectToId(subject):
+    subjects = ['动力', '价格', '内饰', '配置', '安全性', '外观', '操控', '油耗', '空间', '舒适性']
+    return subjects.index(subject)
+
+
 def process(path):
     with open(path, mode='r', encoding='utf-8', newline='') as f:
         csv_file = csv.reader(f, dialect='excel')
@@ -25,6 +30,9 @@ def process(path):
         result = []
 
         for (line, row) in enumerate(csv_file):
+            if row[0] == 'content_id':
+                continue
+
             is_new_id = (pre_row != row[0])
 
             if is_new_id:
@@ -33,8 +41,8 @@ def process(path):
 
             if is_new_id:
                 result[index][0] = segment(row[1], stopwords)
-            result[index][1].append(row[2])
-            result[index][2].append(row[3])
+            result[index][1].append(subjectToId(row[2]))
+            result[index][2].append(int(row[3]))
             pre_row = row[0]
 
         return result
