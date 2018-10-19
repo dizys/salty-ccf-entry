@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 
 STOP_WORD_LIST_PATH = '../../data/stop_words.txt'
 TRAIN_DATA_PATH = '../../data/train.csv'
+TEST_DATA_PATH = '../../data/test_public.csv'
 
 
 def stopwordslist():
@@ -53,7 +54,8 @@ def segment(text, stopwords):
     seg_list = jieba.cut(text, cut_all=False)
 
     for word in seg_list:
-        if word not in stopwords:
+        word = word.strip()
+        if len(word) > 0 and word not in stopwords:
             line_segments.append(word)
 
     return line_segments
@@ -80,16 +82,37 @@ def tfidf_vectorize(segments):
     return tfidf
 
 
+def process_test_data(path):
+    with open(path, mode='r', encoding='utf-8', newline='') as f:
+        csv_file = csv.reader(f, dialect='excel')
+        stopwords = stopwordslist()
+        result = []
+
+        for (line, row) in enumerate(csv_file):
+            if row[0] == 'content_id':
+                continue
+
+            result.append([])
+            index = len(result) - 1
+            result[index] = segment(row[1], stopwords)
+
+        return result
+
+
 def main():
     data = process(TRAIN_DATA_PATH)
-    print(data)
+    print(data[0:100])
 
     segments = fetch_segments(data)
     tfidf = tfidf_vectorize(segments)
     print(tfidf)
 
+    test_data = process_test_data(TEST_DATA_PATH)
+    print(test_data[0:100])
+
     pickle.dump(data, open('../../data/pickles/data', 'wb'))
-    pickle.dump(tfidf, open('../../data/pickles/tfidf_data', 'wb'))
+    pickle.dump(tfidf, open('../../data/pickles/data_tfidf', 'wb'))
+    pickle.dump(test_data, open('../../data/pickles/test_data', 'wb'))
 
 
 if __name__ == '__main__':
