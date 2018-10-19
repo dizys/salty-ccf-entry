@@ -2,9 +2,11 @@ import csv
 import jieba
 import jieba.analyse
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
 
-STOP_WORD_LIST_PATH = 'data/stop_words.txt'
-TRAIN_DATA_PATH = 'data/train.csv'
+STOP_WORD_LIST_PATH = '../../data/stop_words.txt'
+TRAIN_DATA_PATH = '../../data/train.csv'
 
 
 def flatten(list):
@@ -39,7 +41,7 @@ def segment():
 
 
 def sub():
-    with open('train.csv', mode='r', encoding='utf-8', newline='') as f:
+    with open(TRAIN_DATA_PATH, mode='r', encoding='utf-8', newline='') as f:
         # 读取csv文件
         csv_file = csv.reader(f, dialect='excel')
         pre_row = ''
@@ -57,11 +59,14 @@ def sub():
                 subject[tmp_line].append(row[2])
             pre_row = row[1]
 
-        return subject
+    for sub in subject:
+        if sub == []:
+            subject.remove(sub)
+    return subject
 
 
 def value():
-    with open('train.csv', mode='r', encoding='utf-8', newline='') as f:
+    with open(TRAIN_DATA_PATH, mode='r', encoding='utf-8', newline='') as f:
         # 读取csv文件
         csv_file = csv.reader(f, dialect='excel')
         pre_row = ''
@@ -78,7 +83,11 @@ def value():
                 # 如果与上一条评论相同，则将主题和评分放入初次出现行中的list
                 sentiment_value[tmp_line].append(row[3])
             pre_row = row[1]
-        return sentiment_value
+
+    for value in sentiment_value:
+        if value == []:
+            sentiment_value.remove(value)
+    return sentiment_value
 
 
 def tfidf_vectorize(corpus):
@@ -92,7 +101,7 @@ def main():
     segments = segment()
     subject = sub()
     setiment_value = value()
-    tfidf_vectorize(flatten(segments))
+    tfidf = tfidf_vectorize(flatten(segments))
 
 
 if __name__ == '__main__':

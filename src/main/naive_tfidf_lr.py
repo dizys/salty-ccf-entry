@@ -90,7 +90,7 @@ for i in range(len(test_csv)):
 stop_words = list()
 with open("stopwords.txt",'r') as fff:
     for line in fff.readlines():
-        linestr=line.strip()
+        linestr = line.strip()
         stop_words.append(linestr)
 
 
