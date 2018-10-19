@@ -6,28 +6,34 @@ sys.path.append('../')
 
 import gensim
 import numpy as np
-
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
-from keras.utils import to_categorical
+import _pickle as pickle
+from sklearn.preprocessing import MultiLabelBinarizer
 
 from keras.models import Model
-from keras.layers import Input, Dense, Dropout, Activation, Embedding
-from keras.layers import Conv1D, MaxPooling1D, Flatten
 from keras.optimizers import SGD
+# from keras.utils import to_categorical
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
+from keras.layers import Conv1D, MaxPooling1D, Flatten
+from keras.layers import Input, Dense, Dropout, Activation, Embedding
 
 from utils.util import traditional_to_simplified
 
 # file directory and name
 WORD2VEC_DIR = '../../data/word2vec_model/'
-WORD2VEC_NAME = 'zh.bin'
+WORD2VEC_NAME = 'embedding_matrix'
 TEXT_DATA_DIR = '../../data/text/'
 
 
 # IMPORTANT hyper_parameters
-MAX_NB_WORDS = 99999
-MAX_SEQUENCE_LENGTH = 99999
-VALIDATION_SPLIT = 0.2
+MAX_NB_WORDS = 15000
+MAX_SEQUENCE_LENGTH = 40
+VALIDATION_SPLIT = 0.9
+
+EMBEDDING_DIM = 300
+JUDGE_THRESHOLD = 0.5
+MAX_EPOCHES = 2
+BATCH_SIZE = 32
 
 
 """
@@ -50,7 +56,9 @@ print('Found %s unique tokens.' % len(word_index))
 
 data = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
 
-labels = to_categorical(np.asarray(labels))
+# labels = to_categorical(np.asarray(labels))
+labels = MultiLabelBinarizer().fit_transform(labels)
+
 print('Shape of data tensor:', data.shape)
 print('Shape of label tensor:', labels.shape)
 
@@ -68,28 +76,16 @@ y_val = labels[-nb_validation_samples:]
 
 
 """
-3. make word2vec model
+3. load word2vec model
 """
-model = gensim.models.Word2Vec.load(WORD2VEC_DIR + WORD2VEC_NAME)
-
-word2idx = {"_PAD": 0} # 初始化 `[word : token]` 字典，后期 tokenize 语料库就是用该词典。
-vocab_list = [[k, model.wv[k]] for k, v in model.wv.vocab.items()]
-
-for i in range(len(vocab_list)):
-    vocab_list[i][0] = traditional_to_simplified(vocab_list[i][0])
-
-# 存储所有 word2vec 中所有向量的数组，留意其中多一位，词向量全为 0， 用于 padding
-embeddings_matrix = np.zeros((len(model.wv.vocab.items()) + 1, model.vector_size))
-for i in range(len(vocab_list)):
-    word = vocab_list[i][0]
-    word2idx[word] = i + 1
-    embeddings_matrix[i + 1] = vocab_list[i][1]
+embeddings_matrix = pickle.load(open(WORD2VEC_DIR + WORD2VEC_NAME))
+# print(embeddings_matrix.shape)
+# (50102, 300)
 
 
 """
 4. make embedding layer
 """
-EMBEDDING_DIM = 100 #词向量维度
 embedding_layer = Embedding(len(embeddings_matrix),
                             EMBEDDING_DIM,
                             weights=[embeddings_matrix],
@@ -125,13 +121,13 @@ model.compile(loss='binary_crossentropy',
 6. learn
 """
 model.fit(x_train, y_train, validation_data=(x_val, y_val),
-          epochs=5, batch_size=128)
+          epochs=MAX_EPOCHES, batch_size=BATCH_SIZE)
 
 
 """
 7. test
 """
 preds = model.predict(x_test)
-preds[preds>=0.5] = 1
-preds[preds<0.5] = 0
+preds[preds >= JUDGE_THRESHOLD] = 1
+preds[preds < JUDGE_THRESHOLD] = 0
 # score = compare preds and y_test
