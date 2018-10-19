@@ -1,10 +1,10 @@
 # !/usr/bin/python
 # -*-coding:utf-8-*-
 
-from src.utils.langconv import *
+from .langconv import Converter
 
 
-def Traditional2Simplified(sentence):
+def traditional_to_simplified(sentence):
     '''
     将sentence中的繁体字转为简体字
     :param sentence: 待转换的句子
