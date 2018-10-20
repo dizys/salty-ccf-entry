@@ -3,11 +3,11 @@ import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-import tensorflow as tf
+# import tensorflow as tf
 
-##content_id,content,subject,sentiment_value,sentiment_word
-train_csv = pd.read_csv('train.csv')
-test_csv = pd.read_csv('test_public.csv')
+# content_id,content,subject,sentiment_value,sentiment_word
+train_csv = pd.read_csv('../../data/train.csv')
+test_csv = pd.read_csv('../../data/test_public.csv')
 print(train_csv)
 corpus = []
 '''
@@ -23,8 +23,8 @@ subject
 8 空间
 9 外观
 '''
-from keras.utils import np_utils
-hehe=list()
+# from keras.utils import np_utils
+hehe = list()
 hehe.append('价格')
 hehe.append('配置')
 hehe.append('操控')
@@ -88,13 +88,14 @@ for i in range(len(test_csv)):
 # tfidft =TfidfTransformer()
 # bow = cv.fit_transform(corpus)
 stop_words = list()
-with open("stopwords.txt",'r') as fff:
+with open("../../data/stop_words.txt", 'r') as fff:
     for line in fff.readlines():
         linestr = line.strip()
         stop_words.append(linestr)
 
 
-vectorizer = TfidfVectorizer(token_pattern=r"(?u)\b\w+\b", stop_words=stop_words, ngram_range=(1, 2), norm='l2')
+vectorizer = TfidfVectorizer(
+    token_pattern=r"(?u)\b\w+\b", stop_words=stop_words, ngram_range=(1, 2), norm='l2')
 tfidf = vectorizer.fit_transform(corpus)
 x_train = tfidf[0:len(label)]
 x_test = tfidf[len(label):]
@@ -109,11 +110,12 @@ emo_reg.fit(x_train, elabel)
 
 acc = 0
 predictions = log_reg.predict_proba(x_test)
-with open('car.csv', mode='w',encoding='utf-8') as f:
+with open('car.csv', mode='w', encoding='utf-8') as f:
     f.write("content_id,subject,sentiment_value,sentiment_word"+'\n')
     for i, prediction in enumerate(predictions[:]):
         # print ('Prediction:%s. ' % (np.where(prediction>0.10)))
         ers = emo_reg.predict(x_test[i]) - 1
         loc = np.array(np.where(prediction > 0.10))
         for pos in range(len(loc[0])):
-            f.write(test_csv.content_id[i] + ',' + hehe[loc[0][pos]] + ',' + str(ers[0]) + ',' + '\n')
+            f.write(test_csv.content_id[i] + ',' + hehe[loc[0]
+                                                        [pos]] + ',' + str(ers[0]) + ',' + '\n')

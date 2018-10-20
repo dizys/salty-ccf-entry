@@ -100,7 +100,8 @@ def process_test_data(path):
 
             result.append([])
             index = len(result) - 1
-            result[index] = segment(row[1], stopwords)
+            result[index].append(row[0])
+            result[index].append(segment(row[1], stopwords))
 
         return result
 
@@ -129,7 +130,7 @@ def main():
     pickle.dump(tfidf, open('../../data/pickles/data_tfidf', 'wb'))
     pickle.dump(test_data, open('../../data/pickles/test_data', 'wb'))
 
-    paint_hist(word_statistics)
+    # paint_hist(word_statistics)
 
 
 if __name__ == '__main__':
