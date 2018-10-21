@@ -73,28 +73,7 @@ train_texts = pad_sequences(train_sequences, maxlen=MAX_SEQUENCE_LENGTH)
 test_texts = pad_sequences(test_sequences, maxlen=MAX_SEQUENCE_LENGTH)
 
 label_sub = to_categorical(label_sub)
-
-print(label_sen[0])
-print('---------')
-print(label_sen[1])
-print('---------')
-print(label_sen[2])
-print('---------')
 label_sen = to_categorical(label_sen)  # TODO
-# for i in range(len(label_sen)):
-#     if label_sen[i] == -1:
-#         label_sen[i] = [1, 0, 0]
-#     elif label_sen[i] == 0:
-#         label_sen[i] = [0, 1, 0]
-#     else :
-#         label_sen[i] = [0, 0, 1]
-
-print(label_sen[0])
-print('---------')
-print(label_sen[1])
-print('---------')
-print(label_sen[2])
-print('---------')
 
 """
 3. get train, test, validate data
@@ -105,14 +84,20 @@ np.random.shuffle(indices)
 train_texts = train_texts[indices]
 label_sub = label_sub[indices]
 nb_validation_samples = int(VALIDATION_SPLIT * train_texts.shape[0])
-
+spt = nb_validation_samples // 2
 
 x_train = train_texts[:-nb_validation_samples]
 sub_train = label_sub[:-nb_validation_samples]
 sen_train = label_sen[:-nb_validation_samples]
-x_val = train_texts[-nb_validation_samples:]
-sub_val = label_sub[-nb_validation_samples:]
-sen_val = label_sen[-nb_validation_samples:]
+
+x_val = train_texts[-nb_validation_samples:-spt]
+sub_val = label_sub[-nb_validation_samples:-spt]
+sen_val = label_sen[-nb_validation_samples:-spt]
+
+x_judge = train_texts[-spt:]
+sub_judge = label_sub[-spt:]
+sen_judge = label_sen[-spt:]
+
 x_test = test_texts
 
 #
@@ -185,20 +170,36 @@ model_2.fit(x_train, sen_train,
 """
 7. test
 """
-preds = model_1.predict(x_test)
+preds = model_1.predict(x_judge)
 ans = [x.argmax() for x in preds]
 from collections import Counter
 c = Counter(ans)
 print(c)
 print('------------------------')
-sentiment_preds = model_2.predict(x_test)
+sentiment_preds = model_2.predict(x_judge)
 ans2 = [x.argmax() for x in sentiment_preds]
 c2 = Counter(ans2)
 print(c2)
 print('------------------------')
 
-with open('r6.csv', mode='w', encoding='utf-8') as f:
-    f.write("content_id,subject,sentiment_value,sentiment_word"+'\n')
-    for i in range(len(ans)):
-        f.write(test_id[i] + ',' + sub_map[ans[i]] + ',' + str(sen_map[ans2[i]]) + ',' + '\n')
+num_1 = 0
+num_2 = 0
+lenss = len(ans)
 
+print(ans[0])
+print(sub_judge[0])
+
+for x in range(len(ans)):
+    if sub_judge[x].argmax() == ans[x]:
+        num_1 += 1
+    if sen_judge[x].argmax() == ans2[x]:
+        num_2 += 1
+
+print('acc_sub: %.6f, acc_sen: %.6f.' % (num_1 / lenss, num_2 / lenss))
+
+
+# with open('r5.csv', mode='w', encoding='utf-8') as f:
+#     f.write("content_id,subject,sentiment_value,sentiment_word"+'\n')
+#     for i in range(len(ans)):
+#         f.write(test_id[i] + ',' + sub_map[ans[i]] + ',' + str(sen_map[ans2[i]]) + ',' + '\n')
+#

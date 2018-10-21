@@ -49,8 +49,12 @@ train_data = pickle.load(open(DATA_DIR + TRAIN_DATA_NAME, 'rb'))
 print(train_data[:2])
 
 train_texts = [x[0] for x in train_data]
-label_sub = [x[1][0] for x in train_data]
-label_sen = [x[2][0]+1 for x in train_data]
+label_sub = [x[1] for x in train_data]
+label_sen = []
+for x in train_data:
+    lst = [y + 1 for y in x[2]]
+    label_sen.append(lst)
+
 # print(label_sen[:30])
 # print(len(sentiment[0]))
 
@@ -72,29 +76,8 @@ print('Found %s unique tokens.' % len(word_index))
 train_texts = pad_sequences(train_sequences, maxlen=MAX_SEQUENCE_LENGTH)
 test_texts = pad_sequences(test_sequences, maxlen=MAX_SEQUENCE_LENGTH)
 
-label_sub = to_categorical(label_sub)
-
-print(label_sen[0])
-print('---------')
-print(label_sen[1])
-print('---------')
-print(label_sen[2])
-print('---------')
-label_sen = to_categorical(label_sen)  # TODO
-# for i in range(len(label_sen)):
-#     if label_sen[i] == -1:
-#         label_sen[i] = [1, 0, 0]
-#     elif label_sen[i] == 0:
-#         label_sen[i] = [0, 1, 0]
-#     else :
-#         label_sen[i] = [0, 0, 1]
-
-print(label_sen[0])
-print('---------')
-print(label_sen[1])
-print('---------')
-print(label_sen[2])
-print('---------')
+label_sub = MultiLabelBinarizer(label_sub)
+label_sen = MultiLabelBinarizer(label_sen)  # TODO
 
 """
 3. get train, test, validate data
@@ -105,14 +88,20 @@ np.random.shuffle(indices)
 train_texts = train_texts[indices]
 label_sub = label_sub[indices]
 nb_validation_samples = int(VALIDATION_SPLIT * train_texts.shape[0])
-
+spt = nb_validation_samples // 2
 
 x_train = train_texts[:-nb_validation_samples]
 sub_train = label_sub[:-nb_validation_samples]
 sen_train = label_sen[:-nb_validation_samples]
-x_val = train_texts[-nb_validation_samples:]
-sub_val = label_sub[-nb_validation_samples:]
-sen_val = label_sen[-nb_validation_samples:]
+
+x_val = train_texts[-nb_validation_samples:-spt]
+sub_val = label_sub[-nb_validation_samples:-spt]
+sen_val = label_sen[-nb_validation_samples:-spt]
+
+x_judge = train_texts[-spt:]
+sub_judge = label_sub[-spt:]
+sen_judge = label_sen[-spt:]
+
 x_test = test_texts
 
 #
@@ -145,7 +134,7 @@ x = embedding_layer(input_x)
 # x = Dropout(0.5)(x)
 x = Dense(64, activation='relu')(x)
 x = Flatten()(x)
-output_1 = Dense(10, activation='softmax')(x)
+output_1 = Dense(10, activation='sigmoid')(x)
 
 input_y = Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32')
 y = embedding_layer(input_y)
@@ -153,7 +142,7 @@ y = embedding_layer(input_y)
 # y = Dropout(0.5)(y)
 y = Dense(64, activation='relu')(y)
 y = Flatten()(y)
-output_2 = Dense(3, activation='softmax')(y)
+output_2 = Dense(3, activation='sigmoid')(y)
 
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 
@@ -185,20 +174,33 @@ model_2.fit(x_train, sen_train,
 """
 7. test
 """
-preds = model_1.predict(x_test)
-ans = [x.argmax() for x in preds]
-from collections import Counter
-c = Counter(ans)
-print(c)
+ans = model_1.predict(x_judge)
+ans[ans >= JUDGE_THRESHOLD] = 1
+ans[ans < JUDGE_THRESHOLD] = 0
+print(ans)
 print('------------------------')
-sentiment_preds = model_2.predict(x_test)
-ans2 = [x.argmax() for x in sentiment_preds]
-c2 = Counter(ans2)
-print(c2)
+ans2 = model_2.predict(x_judge)
+print(ans2)
 print('------------------------')
 
-with open('r6.csv', mode='w', encoding='utf-8') as f:
-    f.write("content_id,subject,sentiment_value,sentiment_word"+'\n')
-    for i in range(len(ans)):
-        f.write(test_id[i] + ',' + sub_map[ans[i]] + ',' + str(sen_map[ans2[i]]) + ',' + '\n')
+num_1 = 0
+num_2 = 0
+lenss = len(ans)
 
+print(ans[0])
+print(sub_judge[0])
+
+for x in range(len(ans)):
+    if sub_judge[x].argmax() == ans[x]:
+        num_1 += 1
+    if sen_judge[x].argmax() == ans2[x]:
+        num_2 += 1
+
+print('acc_sub: %.6f, acc_sen: %.6f.' % (num_1 / lenss, num_2 / lenss))
+
+
+# with open('r5.csv', mode='w', encoding='utf-8') as f:
+#     f.write("content_id,subject,sentiment_value,sentiment_word"+'\n')
+#     for i in range(len(ans)):
+#         f.write(test_id[i] + ',' + sub_map[ans[i]] + ',' + str(sen_map[ans2[i]]) + ',' + '\n')
+#
